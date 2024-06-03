@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:testapplication/feature/Home/productDetails.dart';
 
 import '../../core/app_colors.dart';
 import '../auth/login.dart';
@@ -11,34 +13,95 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late Future<List<Product>> _productsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _productsFuture = fetchProducts();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(top: 40.0),
-
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.asset("assets/images/homelogo.jpg", height: 80, width: 80),
             Expanded(
-              child: ListView.builder(
-                itemCount: 10,
-                  itemBuilder:(BuildContext context, int index){
-                  return const HomeItemList(
-                    image: 'https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg?cs=srgb&dl=pexels-jessbaileydesign-788946.jpg&fm=jpg',
-                    title: 'Mobile',
-                    price: '25000',
-                    description: "This is a very beautiful phone",
-                  );
-
-                  }),
-            )
-
+              child: FutureBuilder<List<Product>>(
+                future: _productsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text('No products found.'));
+                  } else {
+                    return ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final product = snapshot.data![index];
+                        return HomeItemList(
+                          image: product.imageUrl,
+                          title: product.name,
+                          price: product.price,
+                          description: product.description,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProductDetailsScreen(product: product),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  }
+                },
+              ),
+            ),
           ],
         ),
-
       ),
+    );
+  }
+  
+  Future<List<Product>> fetchProducts() async {
+  QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('products').get();
+
+  return snapshot.docs.map((doc) {
+    return Product.fromFirestore(doc.data() as Map<String, dynamic>, doc.id);
+  }).toList();
+}
+}
+
+
+class Product {
+  final String id;
+  final String imageUrl;
+  final String name;
+  final String price;
+  final String description;
+
+  Product({
+    required this.id,
+    required this.imageUrl,
+    required this.name,
+    required this.price,
+    required this.description,
+  });
+
+  factory Product.fromFirestore(Map<String, dynamic> data, String documentId) {
+    return Product(
+      id: documentId,
+      imageUrl: data['imageUrl'] ?? '',
+      name: data['name'] ?? '',
+      price: data['price'] ?? '',
+      description: data['description'] ?? '',
     );
   }
 }

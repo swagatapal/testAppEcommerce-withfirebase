@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "632673999951",
+    "project_id": "e-commerce-task-307cd",
+    "storage_bucket": "e-commerce-task-307cd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:632673999951:android:6dda5768c0e71eb5d6de3a",
+        "android_client_info": {
+          "package_name": "com.android.application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmnEhCGkcXTvJ5KVqH7jd4460pr73nyf0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:632673999951:android:db812bd74b8ffc31d6de3a",
+        "android_client_info": {
+          "package_name": "com.example.testapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmnEhCGkcXTvJ5KVqH7jd4460pr73nyf0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
